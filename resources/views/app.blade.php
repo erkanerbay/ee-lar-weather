@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-100">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,8 +8,8 @@
     <link href="{{ asset('/css/app.css') }}" rel="stylesheet">
     <script>var config = {!! $config !!};</script>
 </head>
-<body class="h-100">
-<div class="w-100 h-100 d-flex flex-column justify-content-center">
+<body>
+<div class="d-flex flex-column justify-content-center">
     @include('header')
     <div id="app" class="container">
         <app-content></app-content>

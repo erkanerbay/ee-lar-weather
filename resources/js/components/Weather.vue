@@ -1,54 +1,46 @@
 <template>
     <table class="table table-bordered table-sm mb-0">
         <tbody>
-        <tr>
-            <td>Name</td>
-            <td v-text="data.name"></td>
+        <tr v-for="key in keys" :key="key">
+            <template v-if="typeof data[key] !== 'undefined'">
+                <td v-text="getName(key)"></td>
+                <td v-text="data[key]"></td>
+            </template>
         </tr>
-        <tr>
-            <td>Country</td>
-            <td v-text="data.country"></td>
-        </tr>
-        <tr>
-            <td>Description</td>
-            <td class="text-capitalize" v-text="data.description"></td>
-        </tr>
-        <tr>
-            <td>Wind Speed</td>
-            <td v-text="data.wind_speed"></td>
-        </tr>
-        <tr>
-            <td>Wind Degree</td>
-            <td v-text="data.wind_degree"></td>
-        </tr>
-        <tr>
-            <td>Humidity</td>
-            <td v-text="data.humidity"></td>
-        </tr>
-        <tr>
-            <td>Feels Like</td>
-            <td v-text="data.feels_like"></td>
-        </tr>
-        <tr>
-            <td>Temperature</td>
-            <td v-text="data.temp"></td>
-        </tr>
-        <tr>
-            <td>Pressure</td>
-            <td v-text="data.pressure"></td>
-        </tr>
-
         </tbody>
     </table>
 </template>
 
 <script>
+const names = {
+    name: 'Name',
+    country: 'Country',
+    description: 'Description',
+    wind_speed: 'Wind Speed',
+    wind_degree: 'Wind Degree',
+    humidity: 'Humidity',
+    feels_like: 'Feels Like',
+    temp: 'Temperature',
+    pressure: 'Pressure',
+    date_time: 'Date Time',
+};
+
 export default {
     name: 'Weather',
     props: {
         data: {
             type: Object,
             default: null,
+        }
+    },
+    computed: {
+        keys() {
+            return Object.keys(names);
+        }
+    },
+    methods: {
+        getName(name) {
+            return names[name];
         }
     }
 }

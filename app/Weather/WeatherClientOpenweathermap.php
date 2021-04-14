@@ -5,6 +5,7 @@ namespace App\Weather;
 use App\Exceptions\ApiException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -67,12 +68,19 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
             WeatherAttr::FEELS_LIKE => 'main.feels_like',
             WeatherAttr::TEMP => 'main.temp',
             WeatherAttr::PRESSURE => 'main.pressure',
+            WeatherAttr::DATETIME => 'dt',
         ];
 
         $data = [];
 
         foreach ($keys as $key => $getKey) {
             $data[$key] = Arr::get($apiData, $getKey, null);
+        }
+
+        $dt = Arr::get($data, WeatherAttr::DATETIME, null);
+
+        if ($dt) {
+            $data[WeatherAttr::DATETIME] = Carbon::createFromTimestampUTC($dt)->toDateTimeString();
         }
 
         return $data;
@@ -95,11 +103,16 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
      */
     public function forecast(array $params): array
     {
-        $params = array_merge($params, ['cnt' => 4]);
-        $response = $this->request('/forecast/daily', $params);
+        $params = array_merge($params, ['cnt' => 16]);
+        $response = $this->request('/forecast', $params);
+
+        if (!isset($response['list']) || !is_array($response['list'])) {
+            return [];
+        }
+
         return array_map(function ($apiData) {
             return $this->standardize($apiData);
-        }, $response);
+        }, $response['list']);
     }
 
     /**

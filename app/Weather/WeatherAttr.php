@@ -17,4 +17,5 @@ class WeatherAttr
     public const FEELS_LIKE = 'feels_like';
     public const TEMP = 'temp';
     public const PRESSURE = 'pressure';
+    public const DATETIME = 'date_time';
 }
