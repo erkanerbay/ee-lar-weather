@@ -2,8 +2,6 @@
 
 namespace App\Weather;
 
-use Illuminate\Support\Str;
-
 /**
  * Class WeatherClient
  * @package App\Weather
@@ -32,16 +30,6 @@ class WeatherClient implements WeatherClientInterface
         $this->name = $name;
         $client = "\\App\\Weather\\WeatherClient".$name;
         $this->client = new $client();
-    }
-
-    /**
-     * @return array
-     */
-    public function names(): array
-    {
-        return array_map(static function ($name) {
-            return Str::lower($name);
-        }, [self::OPENWEATHERMAP, self::WEATHERSTACK]);
     }
 
     /**
@@ -91,8 +79,7 @@ class WeatherClient implements WeatherClientInterface
      */
     final public function forecast(array $params): array
     {
-        $params = $this->standardize($params);
-        return $this->client->forecast($params);
+        return $this->client->forecast($this->standardize($params));
     }
 
     /**
@@ -101,7 +88,6 @@ class WeatherClient implements WeatherClientInterface
      */
     final public function historical(array $params): array
     {
-        $params = $this->standardize($params);
-        return $this->client->historical($params);
+        return $this->client->historical($this->standardize($params));
     }
 }

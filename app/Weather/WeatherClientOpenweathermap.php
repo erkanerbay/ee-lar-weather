@@ -3,7 +3,6 @@
 namespace App\Weather;
 
 use App\Exceptions\ApiException;
-use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
