@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Http;
 class WeatherClientOpenweathermap implements WeatherClientInterface
 {
     /**
+     * @var string
+     */
+    private string $baseUrl = 'http://api.openweathermap.org/data/2.5';
+
+    /**
      * @var array
      */
     private array $config;
@@ -23,7 +28,7 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
     {
         $this->config = [
             'appid' => config('weather.openweathermap.appid'),
-            'units' => 'metric'
+            'units' => 'metric',
         ];
     }
 
@@ -36,7 +41,7 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
     private function request(string $url, array $params): array
     {
         $params = array_merge($params, $this->config);
-        $response = Http::get($url, $params);
+        $response = Http::get($this->baseUrl.$url, $params);
         $body = $response->json();
 
         if ($response->failed()) {
@@ -47,15 +52,11 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
     }
 
     /**
-     * @param  array  $params
+     * @param  array  $apiData
      * @return array
-     * @throws ApiException
      */
-    public function current(array $params): array
+    private function standardize(array $apiData): array
     {
-        $url = 'https://api.openweathermap.org/data/2.5/weather';
-        $response = $this->request($url, $params);
-
         $keys = [
             WeatherAttr::NAME => 'name',
             WeatherAttr::COUNTRY => 'sys.country',
@@ -69,11 +70,23 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
         ];
 
         $data = [];
+
         foreach ($keys as $key => $getKey) {
-            $data[$key] = Arr::get($response, $getKey, null);
+            $data[$key] = Arr::get($apiData, $getKey, null);
         }
 
         return $data;
+    }
+
+    /**
+     * @param  array  $params
+     * @return array
+     * @throws ApiException
+     */
+    public function current(array $params): array
+    {
+        $response = $this->request('/weather', $params);
+        return $this->standardize($response);
     }
 
     /**
@@ -83,8 +96,10 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
     public function forecast(array $params): array
     {
         $params = array_merge($params, ['cnt' => 4]);
-        $url = 'api.openweathermap.org/data/2.5/forecast/daily';
-        return $this->request($url, $params);
+        $response = $this->request('/forecast/daily', $params);
+        return array_map(function ($apiData) {
+            return $this->standardize($apiData);
+        }, $response);
     }
 
     /**
@@ -95,7 +110,6 @@ class WeatherClientOpenweathermap implements WeatherClientInterface
     public function historical(array $params): array
     {
         $params = array_merge($params, ['type' => 'hour']);
-        $url = 'http://api.openweathermap.org/data/2.5/history/city';
-        return $this->request($url, $params);
+        return $this->request('/history/city', $params);
     }
 }

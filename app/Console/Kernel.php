@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Models\Weather;
+use App\Weather\WeatherClient;
+use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,7 +27,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(static function () {
+            try {
+                $weatherClient = new WeatherClient(WeatherClient::OPENWEATHERMAP);
+                $response = $weatherClient->current(['city' => 'istanbul']);
+                Weather::create($response);
+            } catch (Exception $exception) {
+                // TODO handle $expection
+                dd($exception->getMessage());
+            }
+        })->hourly();
     }
 
     /**

@@ -14,5 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('app');
+    $url = config('app.url');
+    $config = ['base' => $url, 'api' => sprintf('%s/api', $url)];
+    return view('app')->with('config', json_encode($config));
 });

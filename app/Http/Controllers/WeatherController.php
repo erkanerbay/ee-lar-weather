@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Exceptions\ApiException;
 use App\Http\Requests\WeatherRequest;
 use App\Models\Weather;
+use App\Weather\WeatherStates;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Weather\WeatherClient;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -26,6 +28,14 @@ class WeatherController extends ApiController
     }
 
     /**
+     * @return array
+     */
+    public function states():array
+    {
+        return Arr::flatten(array_values(WeatherStates::values()));
+    }
+
+    /**
      * @param  Request  $request
      * @return JsonResponse
      */
@@ -33,7 +43,7 @@ class WeatherController extends ApiController
     {
         $rules = [
             'type'   => 'required|in:current,forecast,historical',
-            'city'   => 'required|string',
+            'state'   => 'required|string',
             'start'  => 'required_if:type,historical|date_format:Y-m-d',
             'end'    => 'required_if:type,historical|nullable|date_format:Y-m-d'
         ];
@@ -48,7 +58,7 @@ class WeatherController extends ApiController
         $type = $params['type'];
         unset($params['type']);
 
-        $weatherClient = new WeatherClient(WeatherClient::WEATHERSTACK);
+        $weatherClient = new WeatherClient(WeatherClient::OPENWEATHERMAP);
         $response = $weatherClient->{$type}($params);
         return response()->json($response);
     }

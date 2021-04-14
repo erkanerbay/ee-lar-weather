@@ -18,5 +18,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('weather')->group(function () {
     Route::get('/latest', [WeatherController::class, 'latest']);
+    Route::get('/states', [WeatherController::class, 'states']);
     Route::get('/status', [WeatherController::class, 'status']);
 });

@@ -37,7 +37,8 @@ class WeatherClient implements WeatherClientInterface
     /**
      * @return array
      */
-    public function names():array{
+    public function names(): array
+    {
         return array_map(static function ($name) {
             return Str::lower($name);
         }, [self::OPENWEATHERMAP, self::WEATHERSTACK]);
@@ -50,10 +51,10 @@ class WeatherClient implements WeatherClientInterface
     {
         $keys = [
             self::WEATHERSTACK => [
-                'query' => 'city'
+                'query' => 'state'
             ],
             self::OPENWEATHERMAP => [
-                'q' => 'city'
+                'q' => 'state'
             ]
         ];
 
