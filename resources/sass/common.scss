@@ -1,0 +1,14 @@
+html,
+body {
+    font-family: 'Nunito', sans-serif;
+    scroll-behavior: smooth;
+    word-wrap: break-word;
+    font-kerning: normal;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+a {
+    transition: $transition-base;
+}
