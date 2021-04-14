@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Weather\WeatherClient;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -56,10 +57,21 @@ class WeatherController extends ApiController
 
         $params = $validator->valid();
         $type = $params['type'];
+        //$cacheKey = $type.$params['state'];
+
         unset($params['type']);
+
+        // check prams has a cache
+        //if (Cache::has($cacheKey)) {
+        //    return response()->json(Cache::get($cacheKey));
+        //}
 
         $weatherClient = new WeatherClient(WeatherClient::OPENWEATHERMAP);
         $response = $weatherClient->{$type}($params);
+
+        // Cache response
+        // Cache::put($cacheKey, $response, now()->addMinutes(60));
+
         return response()->json($response);
     }
 }
